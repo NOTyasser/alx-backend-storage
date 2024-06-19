@@ -1,24 +1,18 @@
 #!/usr/bin/env python3
-"""Module for implementing an expiring web cache and tracker
-"""
+"""Web.py"""
+
 import requests
 from functools import wraps
 from redis import Redis as R
 from typing import Callable
 
 
-def count_url(method: Callable) -> Callable:
-    """_summary_
-    count_url : count
-    how many times a url is accessed        
-    """
-    @wraps(fn)
+def count_url_access(method: Callable) -> Callable:
+    """count_url_access: counts
+    how many times a url is accessed"""
+    @wraps(method)
     def wrapper(url):
-        """_summary_
-
-        Returns:
-            _type_: _description_
-        """
+        """wrapper"""
         cached_url = f'cached:{url}'
         cached_data = R.get(cached_url)
         if cached_data:
@@ -33,16 +27,9 @@ def count_url(method: Callable) -> Callable:
     return wrapper
 
 
-@count_url
+@count_url_access
 def get_page(url: str) -> str:
-    """_summary_
-
-    Args:
-        url (str): _description_
-
-    Returns:
-        str: _description_
-        html content of a given url
-    """
+    """get_page: returns
+    html content of a given url"""
     resp = requests.get(url)
     return resp.text
